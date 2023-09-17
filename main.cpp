@@ -13,11 +13,14 @@ int main()
             double speed_y=0;
         public:
             Rectangle(){
-                rectangle.setFillColor(sf::Color(255,255,255));
-                rectangle.setSize(sf::Vector2f(200,20));
+                set_col(255,255,255);
+                set_size(200,20);
+                set_pos(0,0);
             }
             void set_pos(int x, int y){
                 rectangle.setPosition(x,y);
+                sf::Vector2f center(rectangle.getSize()/2.f);
+                rectangle.setOrigin(center);
             }
             void set_col(int x, int y, int z){
                 rectangle.setFillColor(sf::Color(x,y,z));
@@ -45,6 +48,9 @@ int main()
     window.setFramerateLimit(60);
 
     Rectangle rect1;
+    rect1.set_speed(0,2);
+    rect1.set_speed_ang(3);
+    rect1.set_pos(100,0);
 
     while (window.isOpen())
     {
