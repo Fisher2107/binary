@@ -1,16 +1,18 @@
 //How to compile: g++ -c main.cpp
 //How to link: g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
 #include <SFML/Graphics.hpp>
+#include <math.h>
+#include <iostream>
 
 int main()
 {
-    //Create a rectangle class, color, posisition,speed,size
     class Rectangle {
         private:
             sf::RectangleShape rectangle;
             double speed_ang = 0;
             double speed_x=0;
             double speed_y=0;
+            
         public:
             Rectangle(){
                 set_col(255,255,255);
@@ -44,6 +46,78 @@ int main()
 
     };
 
+    class Duet {
+        private:
+            sf::CircleShape red;
+            sf::CircleShape blue;
+            int speed_ang = 0;
+            int center[2] = {0,0};
+            double width = 0;
+            bool left_blue = 1;
+            float coords[1000][2];
+            int coords_index = 0;
+
+        void fillcoords(){
+            float increment=2*M_PI / 1000;
+            float theta = 0;
+            for(int i=0;i<1000;i++){
+                coords[i][0]= center[0] + ((width/2) * cos(theta));
+                coords[i][1]= center[1] + (width/2) * sin(theta);
+                theta+=increment;
+                //std::cout<<coords[i][0]<<"  "<<coords[i][1]<<std::endl;
+            }
+        }
+            
+        public:
+            Duet(){
+                red.setRadius(10);
+                blue.setRadius(10);
+                red.setFillColor(sf::Color::Red);
+                blue.setFillColor(sf::Color::Blue);
+                set_pos(300,300,70);
+            }
+
+            void set_speed_ang(double x){
+                speed_ang=x;
+            }
+
+            void set_pos(int x,int y,int wid){
+                width = wid;
+                center[0]=x;
+                center[1]=y;
+                fillcoords();
+            }
+
+            void swap(){
+                left_blue = !left_blue;
+            }
+            
+            void draw(){
+                if (coords_index=1000){
+                    coords_index=0;
+                }
+                red.setPosition(
+                    coords[coords_index][0],
+                    coords[coords_index][1]
+                    );
+                blue.setPosition(
+                    coords[(coords_index+500)%1000][0],
+                    coords[(coords_index+500)%1000][1]
+                    );
+                coords_index+=speed_ang;
+            }
+
+            sf::CircleShape draw_red() {
+                return red;
+            }
+            sf::CircleShape draw_blue(){
+                return blue;
+            }
+
+
+
+    };
+
     sf::RenderWindow window(sf::VideoMode(800, 600), "Binary");
     window.setFramerateLimit(60);
 
@@ -51,6 +125,9 @@ int main()
     rect1.set_speed(0,2);
     rect1.set_speed_ang(3);
     rect1.set_pos(100,0);
+
+    Duet duet;
+    duet.set_speed_ang(2);
 
     while (window.isOpen())
     {
@@ -60,9 +137,12 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
+        //if left duet.set_speed_ang =1, elif -1, else 0
         window.clear();
         window.draw(rect1.draw());
+        duet.draw();
+        window.draw(duet.draw_red());
+        window.draw(duet.draw_blue());
         window.display();
         
     }
