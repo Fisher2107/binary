@@ -16,7 +16,7 @@ int main()
         public:
             Rectangle(){
                 set_col(255,255,255);
-                set_size(200,20);
+                set_size(100,20);
                 set_pos(0,0);
             }
             void set_pos(int x, int y){
@@ -74,7 +74,7 @@ int main()
                 blue.setRadius(10);
                 red.setFillColor(sf::Color::Red);
                 blue.setFillColor(sf::Color::Blue);
-                set_pos(300,300,70);
+                set_pos(300,300,90);
             }
 
             void set_speed_ang(double x){
@@ -93,18 +93,21 @@ int main()
             }
             
             void draw(){
-                if (coords_index=1000){
-                    coords_index=0;
+                if (coords_index>=1000){
+                    coords_index-=1000;
+                }else if(coords_index<0){
+                    coords_index+=1000;
                 }
                 red.setPosition(
-                    coords[coords_index][0],
-                    coords[coords_index][1]
+                    coords[coords_index%1000][0],
+                    coords[coords_index%1000][1]
                     );
                 blue.setPosition(
                     coords[(coords_index+500)%1000][0],
                     coords[(coords_index+500)%1000][1]
                     );
                 coords_index+=speed_ang;
+                std::cout<<coords_index<<std::endl;
             }
 
             sf::CircleShape draw_red() {
@@ -122,12 +125,11 @@ int main()
     window.setFramerateLimit(60);
 
     Rectangle rect1;
-    rect1.set_speed(0,2);
-    rect1.set_speed_ang(3);
-    rect1.set_pos(100,0);
+    rect1.set_speed(0,1);
+    rect1.set_speed_ang(4);
+    rect1.set_pos(300,-50);
 
     Duet duet;
-    duet.set_speed_ang(2);
 
     while (window.isOpen())
     {
@@ -140,6 +142,17 @@ int main()
         //if left duet.set_speed_ang =1, elif -1, else 0
         window.clear();
         window.draw(rect1.draw());
+        //Controls for duet
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+            duet.set_speed_ang(11);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+            duet.set_speed_ang(-11);
+        } else{
+            duet.set_speed_ang(0);
+        }
+
+
+
         duet.draw();
         window.draw(duet.draw_red());
         window.draw(duet.draw_blue());
